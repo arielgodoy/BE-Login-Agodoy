@@ -14,6 +14,7 @@ const session = require('express-session');
 
 
 
+
 const ProductManager = require('./managers/ProductManagerMongo.js');
 const productManager = new ProductManager();
 
@@ -30,8 +31,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use(session({
   secret:'mi_palabra_super_secret',
   resave: false,
-  saveUninitialized: true
-  //cookie: {maxAge:60000}
+  saveUninitialized: true  
 }))
 
 

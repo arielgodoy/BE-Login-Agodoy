@@ -18,17 +18,56 @@ router
         }
     })
 
-    .post('/login', (req, res) => {
-        const { username, password } = req.body
-        //console.log(username,password);
-        if (username !== 'adminCoder@coder.com' || password !== 'adminCod3r123') {
-            return res.status(401).send({ status: 'error', message: 'Usuario o contraseña incorrectos' });
-        }           
-        req.session.username = username;
-        req.session.admin = true;           
-        //console.log('Session after login:', req.session); 
-        res.send({ message: 'Logged in' });        
+    .post('/login', async (req, res) => {
+        const { email, password } = req.body;
+        console.log(email,password);
+    
+        try {
+            const user = await usersModel.findOne({ email });
+            
+    
+            if (!user || user.password !== password) {
+                return res.status(401).send({ status: 'error', message: 'Usuario o contraseña incorrectos' });
+            }    
+            req.session.user = user;
+            req.session.email = email;
+            req.session.admin = user.role === 'admin';
+            res.send({ message: 'Logged in' });
+    
+        } catch (error) {
+            console.error('Error en el login:', error);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
     })
+    
+
+    .post('/register', async (req, res) => {
+        const { first_name, last_name, email, password } = req.body;    
+        console.log(first_name,last_name,email,password)
+        if(first_name ==='' || last_name ==='' || email ==='' || password ===''){
+            return res.status(400).send({ message: 'Faltan datos para Registro' });
+        }
+        try {            
+            const existingUser = await usersModel.findOne({ email });    
+            if (existingUser) {
+                return res.status(400).send({ message: 'Usuario ya existe' });
+            }
+            const newUser = await usersModel.create({ first_name, last_name, email, password });                
+            req.session.user = newUser;    
+            res.send({ message: 'Registro Exitoso' });
+
+        } catch (error) {
+            console.error('Error en el registro:', error);
+            res.status(500).send({ message: 'Internal Server Error' });
+        }
+    })
+   
+
+
+
+
+        
+    
     
 
     .get('/logout', (req, res) => {

@@ -10,7 +10,8 @@ router
     res.render("home", {
         title: "Listado de  productos",
         programa: "home",
-        username: req.session.username || 'Invitado',
+        username: req.session.user || 'Invitado',
+        email: req.session.email || 'Nomail',
         admin: req.session.admin || false
     });
 })
@@ -53,6 +54,14 @@ router
     res.render("login", {
         title: "Login",
         programa: "login"
+    });
+})
+
+.get("/register", async (req, res) => {   
+    console.log('Renderizando .. /register..');    
+    res.render("register", {
+        title: "register",
+        programa: "register"
     });
 })
 
